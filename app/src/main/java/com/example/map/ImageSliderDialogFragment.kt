@@ -57,11 +57,14 @@ class ImageSliderDialogFragment : DialogFragment() {
     private inner class ImageSliderAdapter : PagerAdapter() {
 
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
-            val imageView = ImageView(requireContext())
-            imageView.setImageResource(imageResources[position])
-            container.addView(imageView)
-            log("container $container  addView = $imageView")
-            return imageView
+            val inflater = LayoutInflater.from(container.context)
+            val itemView = inflater.inflate(R.layout.travel_item_slideshow, container, false)
+
+//            val imageView = itemView.findViewById<View>(R.id.imageViewSlider)
+//            imageView.setImageResource(imageResources[position])
+
+            container.addView(itemView)
+            return itemView
         }
 
         override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
