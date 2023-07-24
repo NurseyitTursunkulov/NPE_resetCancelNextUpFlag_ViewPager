@@ -19,6 +19,7 @@ class MyViewPager @JvmOverloads constructor(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(motionEvent: MotionEvent): Boolean = try {
+        Log.d("Nurs","viewPager onTochEvent ${motionEvent.mytoString()}")
         super.onTouchEvent(motionEvent)
     } catch (e: IllegalArgumentException) {
         Log.d("Nurs","onTouchEvent e $e" )
@@ -26,6 +27,7 @@ class MyViewPager @JvmOverloads constructor(
     }
 
     override fun onInterceptTouchEvent(motionEvent: MotionEvent): Boolean = try {
+        Log.d("Nurs","viewPager onInterceptTouchEvent ${motionEvent.mytoString()}")
         super.onInterceptTouchEvent(motionEvent)
     } catch (e: IllegalArgumentException) {
         Log.d("Nurs","onInterceptTouchEvent e $e" )

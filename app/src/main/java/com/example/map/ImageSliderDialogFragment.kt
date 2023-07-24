@@ -7,14 +7,13 @@ package com.example.map
  */
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
@@ -25,11 +24,7 @@ import kotlin.math.absoluteValue
 class ImageSliderDialogFragment : DialogFragment() {
 
     private lateinit var viewPager: ViewPager
-    private val imageResources = intArrayOf(
-        R.drawable.asdf_background,
-        R.drawable.baseline_bluetooth_drive_24,
-        R.drawable.baseline_connect_without_contact_24
-    )
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,7 +37,10 @@ class ImageSliderDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewPager = view.findViewById(R.id.viewPager)
-        val adapter = ImageSliderAdapter(swipeToDismissListener = { dismiss()})
+        val adapter = ImageSliderAdapter(swipeToDismissListener = { dismiss()},{move->
+//            viewPager.onTouchEvent(move)
+        })
+//        viewPager.
         viewPager.adapter = adapter
         adapter?.setData(listOf(
             "https://ctsassets1.check24.de/size=1024x/di=3/nfc=999/source=aHR0cHM6Ly9jZG4ud29ybGRvdGEubmV0L3QvMTAyNHg3NjgvY29udGVudC8wYy8zNi8wYzM2ZWQyOWFjZDQ1ZTZkNjYxYzJlZDZjOGFjMmNhMTgxMDU4ZTc0LmpwZWc=!d66fd7/picture.jpg",
@@ -71,11 +69,12 @@ class ImageSliderDialogFragment : DialogFragment() {
         private const val SWIPE_TO_DISMISS_Y = 500f
 
     }
-    private inner class ImageSliderAdapter( private val swipeToDismissListener: OnSwipeToDismissListener?) : PagerAdapter() {
+    private inner class ImageSliderAdapter( private val swipeToDismissListener: OnSwipeToDismissListener?,val onDrag:OnDrag) : PagerAdapter() {
         private val data = mutableListOf<String>()
         fun setData(data: List<String>?) {
+            log("setData")
             val notify = this.data.isNotEmpty()
-            this.data.clear()
+//            this.data.clear()
             if (notify) {
                 notifyDataSetChanged()
             }
@@ -84,9 +83,6 @@ class ImageSliderDialogFragment : DialogFragment() {
             }
             notifyDataSetChanged()
         }
-
-        val viewGroupList:MutableSet<ViewGroup> = mutableSetOf()
-        val viewList:MutableSet<View> = mutableSetOf()
         override fun instantiateItem(container: ViewGroup, position: Int): Any {
             val inflater = LayoutInflater.from(container.context)
             val itemView = inflater.inflate(R.layout.travel_item_slideshow, container, false)
@@ -105,7 +101,6 @@ class ImageSliderDialogFragment : DialogFragment() {
 
                 }
 
-//            imageView.setImageResource(imageResources[position])
             dragView.setOnTouchListener(object : View.OnTouchListener {
                 var startY = 0f
 
@@ -137,8 +132,6 @@ class ImageSliderDialogFragment : DialogFragment() {
                     return true // dispatch another touch event to the image view, because we're consuming this one!
                 }
             })
-            viewList.add(itemView)
-            viewGroupList.add(container)
             Log.d("Nurs"," add view $itemView")
 
 
@@ -149,8 +142,6 @@ class ImageSliderDialogFragment : DialogFragment() {
         override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
             container.removeView(obj as View)
 
-            viewGroupList.remove(container)
-            viewList.remove(obj)
             log("remove ${obj}")
         }
 
@@ -165,10 +156,18 @@ class ImageSliderDialogFragment : DialogFragment() {
 }
 
 fun interface OnSwipeToDismissListener {
-
     fun onCloseFragment()
+}
 
+fun interface OnDrag{
+    fun drag(event: MotionEvent)
+}
 
+fun MotionEvent.mytoString():String{
+    val msg = StringBuilder()
+    msg.append("MotionEvent { action=").append(MotionEvent.actionToString(action))
+    msg.append(" }")
+    return msg.toString()
 }
 
 fun Float?.isLessThanOrEqualTo(compareValue: Float): Boolean = this != null && this <= compareValue
