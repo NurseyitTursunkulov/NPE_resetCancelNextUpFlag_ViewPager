@@ -13,7 +13,6 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.viewpager.widget.PagerAdapter
@@ -39,10 +38,7 @@ class ImageSliderDialogFragment : DialogFragment() {
 
         viewPager = view.findViewById(R.id.viewPager)
 
-        val adapter = ImageSliderAdapter(swipeToDismissListener = { dismiss() }, { move ->
-//            viewPager.onTouchEvent(move)
-        })
-//        viewPager.
+        val adapter = ImageSliderAdapter(swipeToDismissListener = { dismiss() })
         viewPager.adapter = adapter
         adapter.setData(
             listOf(
@@ -58,11 +54,11 @@ class ImageSliderDialogFragment : DialogFragment() {
 
             if (event.action == MotionEvent.ACTION_UP) {
                 // Remove the current item when removeItemEnabled is true
-                    val currentItem = viewPager.currentItem
-                    if (currentItem >= 0 && currentItem < adapter.count) {
-                        adapter.removeItem(currentItem)
-                        Toast.makeText(requireContext(), "Item Removed", Toast.LENGTH_SHORT).show()
-                    }
+                val currentItem = viewPager.currentItem
+                if (currentItem >= 0 && currentItem < adapter.count) {
+                    adapter.removeItem(currentItem)
+                    Toast.makeText(requireContext(), "Item Removed", Toast.LENGTH_SHORT).show()
+                }
             }
             false
         })
@@ -81,14 +77,12 @@ class ImageSliderDialogFragment : DialogFragment() {
 
     companion object {
 
-        private const val DOUBLE_TAP_INTERVAL: Long = 400
         private const val SWIPE_TO_DISMISS_Y = 500f
 
     }
 
     private inner class ImageSliderAdapter(
         private val swipeToDismissListener: OnSwipeToDismissListener?,
-        val onDrag: OnDrag
     ) : PagerAdapter() {
         private val data = mutableListOf<String>()
         fun setData(data: List<String>?) {
@@ -138,8 +132,13 @@ class ImageSliderDialogFragment : DialogFragment() {
 //                                Log.d("Nurs","MotionEvent.ACTION_MOVE")
                             imagePreview.translationY =
                                 if (imagePreview.scale.isLessThanOrEqualTo(1f)) event.y - startY else 0f
-                            if (imagePreview.translationY.absoluteValue.isGreaterThan(SWIPE_TO_DISMISS_Y)) {
-                                Log.d("Nurs","                  swipeToDismissListener?.onCloseFragment()")
+                            if (imagePreview.translationY.absoluteValue.isGreaterThan(
+                                    SWIPE_TO_DISMISS_Y
+                                )
+                            ) {
+//                                itemView.post(Runnable { //todo unkomment this line to make it no crash
+//                                    swipeToDismissListener?.onCloseFragment()
+//                                })
                                 swipeToDismissListener?.onCloseFragment()
                             }
                         }
